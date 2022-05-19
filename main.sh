@@ -20,15 +20,15 @@ touch $networkIDListFile
 
 # Output File
 ipListFile=$location/output/tmp/iplist
-rawdata=$location/output/tmp/rawdata
-serverOutput=$location/output/tmp/serverOutput
+rawdata=$location/output/tmp/rawdata_$date.txt
+serverOutput=$location/output/tmp/serverOutput_$date.txt
 userCSV=$location/output/User_$date.csv
 summaryFile=$location/output/Summary_$date.txt
 #userCSV=$location/output/User.csv
 #summaryFile=$location/output/Summary.txt
 
 #clear tmp
-rm -f $location/output/tmp/*
+#rm -f $location/output/tmp/*
 
 #Command send parameter
 commandDelayValue=0
@@ -97,10 +97,10 @@ echo "Collecting data..."
 #loginData=192.168.102.100" "admin" "a10
 ./ssh_login.sh $loginData $commandParameter ${ipList[*]} > $serverOutput &
 while [ 1 ]; do
+	sleep 1
 	[[ `tail -n 1 $serverOutput` =~ "Error" ]] && echo "`grep "Log" $serverOutput | tail -n 1`" && echo "exit !" && exit
 	echo -ne "`grep "Log" $serverOutput | tail -n 1`\\r"
 	[[ `tail -n 1 $serverOutput` =~ "100%" ]] && echo -ne "`grep "Log" $serverOutput | tail -n 1`\\r" && break
-	sleep 0.1
 done
 wait
 grep 'show\|NAT IP\|Used' $serverOutput > $rawdata
